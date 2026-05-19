@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Ganancia de Capital — República Dominicana</title>
+<style>
+  :root {
+    --azul: #1B4F8A;
+    --azul-claro: #E8F0FA;
+    --azul-medio: #2E6CC7;
+    --azul-borde: #B8D0EE;
+    --rojo: #C0392B;
+    --verde: #1A7A4A;
+    --verde-claro: #E8F6EE;
+    --amarillo: #856404;
+    --amarillo-claro: #FFF8E6;
+    --amarillo-borde: #F0D080;
+    --gris-fondo: #F4F6F9;
+    --gris-borde: #DDE2EA;
+    --gris-texto: #5A6475;
+    --negro: #1A1F2E;
+    --blanco: #FFFFFF;
+    --radio: 10px;
+    --radio-sm: 6px;
+    --sombra: 0 2px 12px rgba(27,79,138,0.09);
+    --sombra-card: 0 4px 24px rgba(27,79,138,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--gris-fondo);
+    color: var(--negro);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--azul);
+    color: var(--blanco);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(27,79,138,0.25);
+  }
+
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-escudo {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .header-text p { font-size: 12px; opacity: 0.75; margin-top: 1px; }
+
+  .header-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+  }
+
+  .intro {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: var(--sombra);
+  }
+
+  .intro-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--azul-claro);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .intro h2 { font-size: 15px; font-weight: 600; color: var(--azul); margin-bottom: 4px; }
+  .intro p { font-size: 13px; color: var(--gris-texto); line-height: 1.7; }
+
+  .formula-hero {
+    background: var(--azul);
+    color: var(--blanco);
+    border-radius: var(--radio);
+    padding: 20px 28px;
+    margin-bottom: 24px;
+    text-align: center;
+    box-shadow: var(--sombra-card);
+  }
+
+  .formula-hero .label { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .formula-hero .formula { font-size: 28px; font-weight: 300; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .formula-hero .formula sub { font-size: 14px; }
+  .formula-hero .vars { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 12px; }
+  .formula-hero .var-item { font-size: 12px; opacity: 0.85; }
+  .formula-hero .var-item strong { opacity: 1; font-weight: 600; }
+
+  .card {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio);
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    box-shadow: var(--sombra);
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--azul);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gris-borde);
+  }
+
+  .card-title .icon { font-size: 16px; }
+
+  .toggle-group {
+    display: flex;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    overflow: hidden;
+    background: var(--gris-fondo);
+  }
+
+  .toggle-group button {
+    flex: 1;
+    padding: 10px 16px;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--gris-texto);
+    transition: all 0.18s;
+    font-family: inherit;
+  }
+
+  .toggle-group button.active {
+    background: var(--azul);
+    color: var(--blanco);
+    font-weight: 600;
+  }
+
+  .toggle-group button:not(.active):hover { background: var(--azul-claro); color: var(--azul); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .formula-hero .vars { gap: 12px; }
+    .formula-hero .formula { font-size: 22px; }
+    .header-badge { display: none; }
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; font-weight: 500; color: var(--negro); }
+  .field input, .field select {
+    padding: 10px 14px;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--negro);
+    background: var(--blanco);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--azul-medio);
+    box-shadow: 0 0 0 3px rgba(46,108,199,0.12);
+  }
+  .field .hint { font-size: 11px; color: var(--gris-texto); line-height: 1.5; }
+  .field input[type="number"] { -moz-appearance: textfield; }
+  .field input[type="number"]::-webkit-inner-spin-button { opacity: 0.5; }
+
+  .multiplier-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: var(--azul-claro);
+    border: 1px solid var(--azul-borde);
+    border-radius: var(--radio-sm);
+    font-size: 13px;
+    color: var(--azul);
+    margin-top: 6px;
+  }
+  .multiplier-pill .mi-val { font-weight: 700; font-size: 15px; }
+
+  .condicion-box {
+    background: var(--amarillo-claro);
+    border: 1px solid var(--amarillo-borde);
+    border-radius: var(--radio-sm);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--amarillo);
+    margin-top: 14px;
+    display: none;
+    line-height: 1.6;
+  }
+  .condicion-box label { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; margin-top: 10px; font-weight: 500; color: var(--amarillo); }
+  .condicion-box input[type="checkbox"] { margin-top: 2px; accent-color: var(--azul); width: 15px; height: 15px; flex-shrink: 0; }
+
+  .btn-calcular {
+    width: 100%;
+    padding: 15px;
+    background: var(--azul);
+    color: var(--blanco);
+    border: none;
+    border-radius: var(--radio);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+    transition: background 0.18s, transform 0.1s;
+    box-shadow: 0 4px 14px rgba(27,79,138,0.3);
+    margin-bottom: 24px;
+  }
+  .btn-calcular:hover { background: var(--azul-medio); }
+  .btn-calcular:active { transform: scale(0.99); }
+
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .formula-desglose {
+    background: var(--gris-fondo);
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    padding: 4px 0;
+    margin-bottom: 20px;
+  }
+
+  .formula-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gris-borde);
+    font-size: 14px;
+  }
+  .formula-row:last-child { border-bottom: none; }
+  .formula-row .fl { color: var(--gris-texto); }
+  .formula-row .fv { font-weight: 600; color: var(--negro); }
+  .formula-row.total-row {
+    background: var(--blanco);
+    border-top: 2px solid var(--azul);
+    border-bottom: none;
+    margin-top: 2px;
+  }
+  .formula-row.total-row .fl { font-size: 15px; font-weight: 600; color: var(--negro); }
+  .formula-row.total-row .fv { font-size: 20px; }
+  .formula-row.total-row.ganancia .fv { color: var(--verde); }
+  .formula-row.total-row.perdida .fv { color: var(--rojo); }
+
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media(max-width: 480px) { .metrics-row { grid-template-columns: 1fr; } }
+
+  .metric-card {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio);
+    padding: 16px 20px;
+    box-shadow: var(--sombra);
+  }
+  .metric-card .mc-label { font-size: 12px; color: var(--gris-texto); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .metric-card .mc-value { font-size: 24px; font-weight: 700; }
+  .metric-card .mc-sub { font-size: 12px; color: var(--gris-texto); margin-top: 4px; }
+  .metric-card.ganancia .mc-value { color: var(--verde); }
+  .metric-card.perdida .mc-value { color: var(--rojo); }
+  .metric-card.impuesto .mc-value { color: var(--azul); }
+
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--radio-sm);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .alert .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert.info { background: var(--azul-claro); color: var(--azul); border: 1px solid var(--azul-borde); }
+  .alert.warning { background: var(--amarillo-claro); color: var(--amarillo); border: 1px solid var(--amarillo-borde); }
+  .alert.success { background: var(--verde-claro); color: var(--verde); border: 1px solid #A8D8BE; }
+  .alert.danger { background: #FDECEA; color: var(--rojo); border: 1px solid #F5B8B3; }
+
+  .escala-wrap { margin-top: 8px; }
+  .escala-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--negro);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  table.escala {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.escala th {
+    text-align: left;
+    padding: 8px 14px;
+    background: var(--gris-fondo);
+    color: var(--gris-texto);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--gris-borde);
+  }
+  table.escala td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--gris-borde);
+    color: var(--negro);
+  }
+  table.escala tr:last-child td { border-bottom: none; }
+  table.escala tr.active-tramo td {
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-weight: 600;
+  }
+  table.escala tr.active-tramo td:first-child { border-left: 3px solid var(--azul); }
+
+  .fuentes {
+    font-size: 11px;
+    color: var(--gris-texto);
+    border-top: 1px solid var(--gris-borde);
+    padding-top: 12px;
+    margin-top: 16px;
+    line-height: 1.7;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: var(--gris-texto);
+    border-top: 1px solid var(--gris-borde);
+    margin-top: 16px;
+  }
+
+  .separator { height: 1px; background: var(--gris-borde); margin: 18px 0; }
+
+  .reset-btn {
+    display: block;
+    margin: 0 auto 8px;
+    padding: 8px 24px;
+    background: transparent;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-size: 13px;
+    color: var(--gris-texto);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { border-color: var(--azul); color: var(--azul); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-escudo">🇩🇴</div>
+    <div class="header-text">
+      <h1>Calculadora de Ganancia de Capital</h1>
+      <p>República Dominicana · Art. 289 Código Tributario · Decreto 139-98</p>
+    </div>
+    <div class="header-badge">Res. DDG-AR1-2026-00003</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="intro">
+    <div class="intro-icon">⚖️</div>
+    <div>
+      <h2>Análisis ontológico — Base imponible</h2>
+      <p>La base imponible es la <strong>ganancia neta de capital</strong>: el incremento patrimonial efectivamente realizado al enajenar un activo de capital, determinado mediante ajuste por inflación obligatorio conforme al Art. 327 del Código Tributario. Los multiplicadores vigentes corresponden a la Resolución DDG-AR1-2026-00003 emitida el 15 de abril de 2026 por la DGII.</p>
+    </div>
+  </div>
+
+  <div class="formula-hero">
+    <div class="label">Fórmula positivizada — Art. 289 C.T. · Art. 41 Decreto 139-98</div>
+    <div class="formula">G<sub>c</sub> &nbsp;=&nbsp; P<sub>v</sub> &nbsp;&minus;&nbsp; (C<sub>f</sub> &nbsp;&middot;&nbsp; M<sub>i</sub>)</div>
+    <div class="vars">
+      <div class="var-item"><strong>G<sub>c</sub></strong> Ganancia de capital gravable</div>
+      <div class="var-item"><strong>P<sub>v</sub></strong> Precio de venta / valor de enajenación</div>
+      <div class="var-item"><strong>C<sub>f</sub></strong> Costo fiscal (adquisición + mejoras)</div>
+      <div class="var-item"><strong>M<sub>i</sub></strong> Multiplicador de inflación DGII</div>
+    </div>
+  </div>
+
+  <!-- TIPO DE CONTRIBUYENTE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">👤</span> Tipo de contribuyente</div>
+    <div class="toggle-group" id="toggleContrib">
+      <button class="active" onclick="setContrib('fisica', this)">Persona física</button>
+      <button onclick="setContrib('juridica', this)">Persona jurídica</button>
+    </div>
+  </div>
+
+  <!-- TIPO DE ACTIVO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏛️</span> Tipo de activo de capital</div>
+    <div class="toggle-group" id="toggleActivo">
+      <button class="active" onclick="setActivo('inmueble', this)">Inmueble</button>
+      <button onclick="setActivo('acciones', this)">Acciones / cuotas sociales</button>
+      <button onclick="setActivo('otro', this)">Otro activo</button>
+    </div>
+  </div>
+
+  <!-- AÑO DE ADQUISICIÓN -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📅</span> Año de adquisición del activo</div>
+    <div class="field">
+      <label>Año de adquisición</label>
+      <select id="anioAdq" onchange="updateMultiplier()">
+        <option value="">— selecciona el año —</option>
+      </select>
+      <div class="hint">Determina el multiplicador de inflación (Mi) conforme a la Res. DDG-AR1-2026-00003 · Para activos adquiridos antes de 1980 se aplica el multiplicador de 1980 (142.0874) como piso mínimo</div>
+      <div id="multiPill" style="display:none;" class="multiplier-pill">
+        📊 Multiplicador Mi aplicable (cierre marzo 2026): <span class="mi-val" id="multiVal">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRECIO DE VENTA -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💰</span> Precio o valor de enajenación (P<sub>v</sub>)</div>
+    <div class="field">
+      <label>Precio de venta o valor de enajenación — RD$</label>
+      <input type="number" id="precioVenta" placeholder="0.00" min="0" step="0.01" oninput="checkCasaHab()">
+      <div class="hint">Art. 289 C.T. · La DGII puede determinar un valor mínimo de venta distinto al pactado entre las partes (Res. 1-2000 · NG 07-2014 Art. 12 num. 3). Para acciones, el valor mínimo se calcula sobre el patrimonio neto de la sociedad.</div>
+    </div>
+  </div>
+
+  <!-- COSTO FISCAL -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Costo fiscal (C<sub>f</sub>)</div>
+
+    <div class="grid2" style="margin-bottom:16px;">
+      <div class="field">
+        <label>Costo de adquisición o producción — RD$</label>
+        <input type="number" id="costoAdq" placeholder="0.00" min="0" step="0.01">
+        <div class="hint">Precio pagado + gastos necesarios (seguros, fletes, instalación) — Art. 287 C.T.</div>
+      </div>
+      <div class="field">
+        <label>Mejoras documentadas — RD$</label>
+        <input type="number" id="mejoras" placeholder="0.00" min="0" step="0.01">
+        <div class="hint">Adiciones capitalizables que incrementan el valor o vida útil del activo</div>
+      </div>
+    </div>
+
+    <div id="campoITI">
+      <div class="field">
+        <label>Impuesto de Transferencia Inmobiliaria (ITI) pagado — RD$</label>
+        <input type="number" id="iti" placeholder="0.00" min="0" step="0.01">
+        <div class="hint">El ITI integra el costo fiscal al constituir un desembolso necesario e indisociable de la adquisición del inmueble</div>
+      </div>
+    </div>
+
+    <div id="campoDepreciacion" style="margin-top:16px;">
+      <div class="field">
+        <label>Depreciación acumulada — RD$</label>
+        <input type="number" id="depreciacion" placeholder="0.00" min="0" step="0.01">
+        <div class="hint">Para bienes depreciables: el costo base es el <strong>valor residual</strong> (costo − depreciación acumulada). Art. 287 C.T.: Categoría 1 (edificaciones) 5% · Cat. 2 25% · Cat. 3 15%</div>
+      </div>
+    </div>
+
+    <div id="campoAcciones" style="display:none; margin-top:16px;">
+      <div class="separator"></div>
+      <div style="font-size:12px; font-weight:600; color:var(--azul); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">Ajustes específicos para acciones / cuotas — Art. 41 literal a, Decreto 139-98</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Utilidades acumuladas gravadas con ISR — RD$</label>
+          <input type="number" id="utilidades" placeholder="0.00" min="0" step="0.01">
+          <div class="hint">Se suman al costo fiscal</div>
+        </div>
+        <div class="field">
+          <label>Pérdidas acumuladas de la sociedad — RD$</label>
+          <input type="number" id="perdidasAcc" placeholder="0.00" min="0" step="0.01">
+          <div class="hint">Se deducen del costo fiscal</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alertaCasaHab" class="condicion-box">
+      🏠 <strong>Posible exención parcial — Art. 299, literal m</strong><br>
+      Si este inmueble constituyó su residencia principal durante los tres años anteriores a la enajenación, los primeros <strong>RD$500,000.00</strong> de la ganancia están exentos del impuesto. Ambas condiciones deben cumplirse acumulativamente: (1) propiedad por 3 años y (2) residencia principal por ese mismo período.
+      <label>
+        <input type="checkbox" id="aplicaExencion" onchange="actualizarCalculo()">
+        Aplicar exención casa habitación (RD$500,000)
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-calcular" onclick="calcular()">
+    ⚡ Calcular ganancia de capital
+  </button>
+
+  <!-- RESULTADOS -->
+  <div class="results" id="resultados">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> Desglose del cálculo — G<sub>c</sub> = P<sub>v</sub> − (C<sub>f</sub> · M<sub>i</sub>)</div>
+
+      <div class="formula-desglose">
+        <div class="formula-row">
+          <span class="fl">Precio de venta / valor de enajenación (P<sub>v</sub>)</span>
+          <span class="fv" id="r-pv">—</span>
+        </div>
+        <div class="formula-row">
+          <span class="fl">Costo fiscal base (C<sub>f</sub>)</span>
+          <span class="fv" id="r-cf">—</span>
+        </div>
+        <div class="formula-row">
+          <span class="fl">Multiplicador de inflación DGII (M<sub>i</sub>)</span>
+          <span class="fv" id="r-mi">—</span>
+        </div>
+        <div class="formula-row">
+          <span class="fl">Costo fiscal ajustado por inflación (C<sub>f</sub> × M<sub>i</sub>)</span>
+          <span class="fv" id="r-cfaj">—</span>
+        </div>
+        <div class="formula-row" id="r-exencion-row" style="display:none;">
+          <span class="fl">Exención casa habitación — Art. 299 literal m</span>
+          <span class="fv" style="color:var(--verde);">− RD$500,000.00</span>
+        </div>
+        <div class="formula-row total-row" id="r-total-row">
+          <span class="fl">Ganancia de capital gravable (G<sub>c</sub>)</span>
+          <span class="fv" id="r-gc">—</span>
+        </div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric-card" id="mc-ganancia">
+          <div class="mc-label">Ganancia neta gravable</div>
+          <div class="mc-value" id="m-ganancia">—</div>
+          <div class="mc-sub" id="m-ganancia-sub">—</div>
+        </div>
+        <div class="metric-card impuesto">
+          <div class="mc-label">Impuesto estimado (ISR)</div>
+          <div class="mc-value" id="m-impuesto">—</div>
+          <div class="mc-sub" id="m-impuesto-sub">—</div>
+        </div>
+      </div>
+
+      <div id="alertaResultado" class="alert info" style="display:none;"></div>
+
+      <!-- Escala progresiva -->
+      <div id="escalaSection" style="display:none;">
+        <div class="separator"></div>
+        <div class="alert warning">
+          <span class="alert-icon">⚠️</span>
+          <span><strong>Atención — Discrepancia con práctica administrativa:</strong> La DGII aplica el 25% como tasa fija sobre la ganancia de capital. Sin embargo, el <strong>Art. 296 del Código Tributario</strong> establece una <strong>escala progresiva por tramos</strong>, no una tarifa plana. La tasa efectiva real se resalta en la tabla. Este criterio administrativo carece de sustento normativo y es defendible en sede contencioso-tributaria.</span>
+        </div>
+        <div class="escala-wrap">
+          <div class="escala-title">📈 Escala progresiva — Art. 296 Código Tributario</div>
+          <table class="escala">
+            <thead>
+              <tr>
+                <th>Tramo de renta neta imponible</th>
+                <th>Tasa</th>
+                <th>Impuesto en tramo</th>
+              </tr>
+            </thead>
+            <tbody id="escalaBody"></tbody>
+          </table>
+          <div style="margin-top:10px; padding:10px 14px; background:var(--azul-claro); border-radius:var(--radio-sm); font-size:13px; color:var(--azul);">
+            📌 <strong>Tasa efectiva real:</strong> <span id="tasaEfectivaReal">—</span> &nbsp;|&nbsp; <strong>Si la DGII aplica 25% fijo:</strong> <span id="tasaDGII">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fuentes">
+        <strong>Fundamentos normativos:</strong> Art. 289 Código Tributario (hecho generador · activo de capital · exclusiones) · Art. 41 Decreto 139-98 (costo fiscal ajustado) · Art. 287 C.T. (categorías de depreciación) · Art. 296 C.T. (escala progresiva personas físicas) · Art. 297 C.T. (tasa corporativa 27%) · Art. 299 literal m (exención casa habitación) · Art. 327 C.T. (ajuste por inflación) · Res. DDG-AR1-2026-00003 de fecha 15/04/2026 (multiplicadores cierre marzo 2026) · NG 07-2014 Art. 12 (valoración acciones) · Res. 1-2000 (valor fidedigno de enajenación)
+      </div>
+
+    </div>
+
+    <button class="reset-btn" onclick="resetForm()">↺ Limpiar formulario</button>
+  </div>
+
+</main>
+
+<footer>
+  Calculadora de Ganancia de Capital · República Dominicana · Resolución DDG-AR1-2026-00003 · Solo de carácter informativo y referencial — no constituye asesoramiento tributario formal
+</footer>
+
+<script>
+const MULT = {
+  "1980":142.0874,"1981":130.0604,"1982":114.1117,"1983":107.6069,"1984":96.2293,
+  "1985":63.5425,"1986":57.3503,"1987":53.3978,"1988":40.0055,"1989":27.2756,
+  "1990":20.1086,"1991":11.0850,"1992":11.0005,"1993":10.2301,"1994":9.6895,
+  "1995":8.4833,"1996":7.9675,"1997":7.4686,"1998":7.0958,"1999":6.5910,
+  "2000":6.2340,"2001":5.6124,"2002":5.4005,"2003":4.5493,"2004":2.8026,
+  "2005":2.6873,"2006":2.4823,"2007":2.3521,"2008":2.1447,"2009":2.0936,
+  "2010":1.9488,"2011":1.8111,"2012":1.7257,"2013":1.6440,"2014":1.5962,
+  "2015":1.5861,"2016":1.5614,"2017":1.5138,"2018":1.4568,"2019":1.4356,
+  "2020":1.4013,"2021":1.2940,"2022":1.1865,"2023":1.1204,"2024":1.0838,
+  "2025":1.0463,"2026":1.0000
+};
+
+const ESCALA = [
+  { desde:0, hasta:416220, tasa:0, label:"Hasta RD$416,220.00" },
+  { desde:416220, hasta:624329, tasa:0.15, label:"RD$416,220.01 – RD$624,329.00" },
+  { desde:624329, hasta:867123, tasa:0.20, label:"RD$624,329.01 – RD$867,123.00" },
+  { desde:867123, hasta:Infinity, tasa:0.25, label:"Más de RD$867,123.00" }
+];
+
+let contribTipo = "fisica", activoTipo = "inmueble";
+
+function fmt(n) {
+  return "RD$" + Math.abs(n).toLocaleString("es-DO", { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+function setContrib(tipo, btn) {
+  contribTipo = tipo;
+  document.querySelectorAll("#toggleContrib button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function setActivo(tipo, btn) {
+  activoTipo = tipo;
+  document.querySelectorAll("#toggleActivo button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("campoITI").style.display = tipo === "inmueble" ? "block" : "none";
+  document.getElementById("campoDepreciacion").style.display = tipo !== "acciones" ? "block" : "none";
+  document.getElementById("campoAcciones").style.display = tipo === "acciones" ? "block" : "none";
+  checkCasaHab();
+}
+
+(function poblarAnios() {
+  const sel = document.getElementById("anioAdq");
+  const keys = Object.keys(MULT);
+  keys.forEach((y, i) => {
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.textContent = i === 0 ? "1980 y años anteriores" : y;
+    sel.appendChild(opt);
+  });
+})();
+
+function updateMultiplier() {
+  const yr = document.getElementById("anioAdq").value;
+  const pill = document.getElementById("multiPill");
+  if (yr && MULT[yr]) {
+    document.getElementById("multiVal").textContent = MULT[yr].toFixed(4);
+    pill.style.display = "inline-flex";
+  } else {
+    pill.style.display = "none";
+  }
+}
+
+function checkCasaHab() {
+  const pv = parseFloat(document.getElementById("precioVenta").value) || 0;
+  const mostrar = activoTipo === "inmueble" && pv > 0;
+  document.getElementById("alertaCasaHab").style.display = mostrar ? "block" : "none";
+}
+
+function actualizarCalculo() {
+  if (document.getElementById("resultados").classList.contains("show")) calcular();
+}
+
+function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function calcImpuestoFisica(gc) {
+  let total = 0;
+  const detalle = ESCALA.map(t => {
+    if (gc <= t.desde) return { tramo: t, base: 0, imp: 0 };
+    const base = Math.min(gc, t.hasta === Infinity ? gc : t.hasta) - t.desde;
+    const imp = base * t.tasa;
+    total += imp;
+    return { tramo: t, base, imp };
+  });
+  return { total, detalle };
+}
+
+function calcular() {
+  const anio = document.getElementById("anioAdq").value;
+  const pv = val("precioVenta");
+  const costoAdq = val("costoAdq");
+  const mejoras = val("mejoras");
+  const iti = activoTipo === "inmueble" ? val("iti") : 0;
+  const dep = activoTipo !== "acciones" ? val("depreciacion") : 0;
+  const util = activoTipo === "acciones" ? val("utilidades") : 0;
+  const perdAcc = activoTipo === "acciones" ? val("perdidasAcc") : 0;
+  const exencion = activoTipo === "inmueble" && document.getElementById("aplicaExencion").checked;
+
+  if (!anio) { alert("Por favor selecciona el año de adquisición del activo."); return; }
+  if (pv === 0 && costoAdq === 0) { alert("Ingresa al menos el precio de venta y el costo de adquisición."); return; }
+
+  const mi = MULT[anio];
+  let cf = Math.max(0, costoAdq + mejoras + iti + util - perdAcc - dep);
+  const cfAjustado = cf * mi;
+  let gc = pv - cfAjustado;
+  const gcBruto = gc;
+  let exencionMonto = 0;
+  if (exencion && gc > 0) { exencionMonto = Math.min(gc, 500000); gc -= exencionMonto; }
+
+  // Desglose
+  document.getElementById("r-pv").textContent = fmt(pv);
+  document.getElementById("r-cf").textContent = fmt(cf);
+  document.getElementById("r-mi").textContent = mi.toFixed(4) + (anio === "1980" ? " (1980 y anteriores)" : " (" + anio + ")");
+  document.getElementById("r-cfaj").textContent = fmt(cfAjustado);
+  document.getElementById("r-exencion-row").style.display = exencionMonto > 0 ? "flex" : "none";
+  document.getElementById("r-gc").textContent = (gc < 0 ? "−" : "") + fmt(gc);
+
+  const totalRow = document.getElementById("r-total-row");
+  totalRow.className = "formula-row total-row " + (gc >= 0 ? "ganancia" : "perdida");
+
+  // Métricas
+  const mG = document.getElementById("mc-ganancia");
+  mG.className = "metric-card " + (gc >= 0 ? "ganancia" : "perdida");
+  document.getElementById("m-ganancia").textContent = (gc < 0 ? "−" : "") + fmt(Math.abs(gc));
+  document.getElementById("m-ganancia-sub").textContent = gc >= 0 ? "Ganancia gravable neta" : "Pérdida de capital";
+
+  const alerta = document.getElementById("alertaResultado");
+
+  if (gc <= 0) {
+    document.getElementById("m-impuesto").textContent = "RD$0.00";
+    document.getElementById("m-impuesto-sub").textContent = "No hay impuesto a pagar";
+    alerta.className = "alert warning";
+    alerta.innerHTML = "⚠️ <span><strong>Pérdida de capital de " + fmt(Math.abs(gc)) + ".</strong> Conforme al Art. 289 literal i del Código Tributario, esta pérdida puede arrastrarse a ejercicios fiscales futuros para compensarse con ganancias de capital. No aplica a personas físicas en el año de su fallecimiento.</span>";
+    alerta.style.display = "flex";
+    document.getElementById("escalaSection").style.display = "none";
+  } else if (contribTipo === "juridica") {
+    const imp = gc * 0.27;
+    document.getElementById("m-impuesto").textContent = fmt(imp);
+    document.getElementById("m-impuesto-sub").textContent = "Tasa corporativa fija 27% — Art. 297 C.T.";
+    alerta.className = "alert info";
+    alerta.innerHTML = "🏢 <span><strong>Persona jurídica:</strong> La ganancia de capital se integra a la renta neta imponible del ejercicio y tributa a la tasa corporativa del <strong>27%</strong> (Art. 297 C.T.). Impuesto estimado: <strong>" + fmt(imp) + "</strong>.</span>";
+    alerta.style.display = "flex";
+    document.getElementById("escalaSection").style.display = "none";
+  } else {
+    const { total, detalle } = calcImpuestoFisica(gc);
+    const tasaEfectiva = gc > 0 ? ((total / gc) * 100).toFixed(2) : "0.00";
+    const impDGII = gc * 0.25;
+    document.getElementById("m-impuesto").textContent = fmt(total);
+    document.getElementById("m-impuesto-sub").textContent = "Tasa efectiva real: " + tasaEfectiva + "% (escala progresiva Art. 296)";
+    alerta.className = "alert warning";
+    alerta.innerHTML = "⚠️ <span><strong>Advertencia normativa:</strong> La DGII aplica 25% fijo resultando en <strong>" + fmt(impDGII) + "</strong>. El Art. 296 establece escala progresiva con tasa efectiva real de <strong>" + tasaEfectiva + "%</strong>, resultando en <strong>" + fmt(total) + "</strong>. Diferencia: <strong>" + fmt(impDGII - total) + "</strong> en exceso cobrado por la DGII.</span>";
+    alerta.style.display = "flex";
+    document.getElementById("escalaSection").style.display = "block";
+    document.getElementById("tasaEfectivaReal").textContent = tasaEfectiva + "% → " + fmt(total);
+    document.getElementById("tasaDGII").textContent = "25% → " + fmt(impDGII);
+
+    const tbody = document.getElementById("escalaBody");
+    tbody.innerHTML = "";
+    detalle.forEach(d => {
+      const tr = document.createElement("tr");
+      const activo = d.base > 0;
+      if (activo) tr.className = "active-tramo";
+      tr.innerHTML = "<td>" + d.tramo.label + "</td><td>" + (d.tramo.tasa === 0 ? "Exento" : (d.tramo.tasa * 100).toFixed(0) + "%") + "</td><td>" + (d.imp > 0 ? fmt(d.imp) : "—") + "</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("resultados").className = "results show";
+  document.getElementById("resultados").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetForm() {
+  ["precioVenta","costoAdq","mejoras","iti","depreciacion","utilidades","perdidasAcc"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("anioAdq").value = "";
+  document.getElementById("multiPill").style.display = "none";
+  document.getElementById("alertaCasaHab").style.display = "none";
+  document.getElementById("aplicaExencion").checked = false;
+  document.getElementById("resultados").className = "results";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+</body>
+</html>
